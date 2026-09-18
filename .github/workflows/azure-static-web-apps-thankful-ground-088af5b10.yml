@@ -15,27 +15,24 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     permissions:
-       id-token: write
-       contents: read
+      id-token: write
+      contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7.0.1
         with:
           submodules: true
           lfs: false
       - name: Set build date and time
         run: |
-          BUILD_DATETIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          BUILD_DATETIME=$(LC_ALL=C date -u +"%b %-d, %Y %H:%M")
           sed -i "s/DATETIME/${BUILD_DATETIME}/g" site/index.html
-      - name: Install OIDC Client from Core Package
-        run: npm install @actions/core@1.6.0 @actions/http-client
       - name: Get Id Token
-        uses: actions/github-script@v6
+        uses: actions/github-script@v9.0.0
         id: idtoken
         with:
-           script: |
-               const coredemo = require('@actions/core')
-               return await coredemo.getIDToken()
-           result-encoding: string
+          script: |
+            return await core.getIDToken()
+          result-encoding: string
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
